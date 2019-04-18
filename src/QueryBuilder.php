@@ -8,7 +8,7 @@
 
 namespace edgardmessias\db\informix;
 
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 use yii\base\NotSupportedException;
 use yii\db\ExpressionInterface;
 use yii\db\Query;
@@ -328,7 +328,7 @@ class QueryBuilder extends \yii\db\QueryBuilder
     {
         $tableSchema = $this->db->getTableSchema($table);
         if ($tableSchema === null) {
-            throw new InvalidParamException("Unknown table: $table");
+            throw new InvalidArgumentException("Unknown table: $table");
         }
         if ($tableSchema->sequenceName === null) {
             return '';
