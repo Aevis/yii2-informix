@@ -17,10 +17,11 @@ class QueryBuilderTest extends \yiiunit\framework\db\QueryBuilderTest
     protected $driverName = 'informix';
 
     /**
-     * @throws \Exception
+     * @param bool $reset
+     * @param bool $open
      * @return \edgardmessias\db\informix\QueryBuilder
      */
-    protected function getQueryBuilder()
+    protected function getQueryBuilder($reset = true, $open = false)
     {
         if (self::$params === null) {
             self::$params = include __DIR__ . '/data/config.php';
