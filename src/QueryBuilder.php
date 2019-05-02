@@ -51,6 +51,7 @@ class QueryBuilder extends \yii\db\QueryBuilder
     {
         return array_merge(parent::defaultExpressionBuilders(), [
             'yii\db\conditions\InCondition' => 'edgardmessias\db\informix\conditions\InConditionBuilder',
+            'yii\db\conditions\LikeCondition' => 'edgardmessias\db\ibm\db2\conditions\LikeConditionBuilder',
         ]);
     }
 
