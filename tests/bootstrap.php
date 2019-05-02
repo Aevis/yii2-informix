@@ -14,3 +14,6 @@ require_once __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
 Yii::setAlias('@yiiunit', __DIR__ . '/../vendor/yiisoft/yii2-dev/tests');
 Yii::setAlias('@edgardmessias/unit/db/informix', __DIR__);
 Yii::setAlias('@edgardmessias/db/informix', dirname(__DIR__));
+
+require_once __DIR__ . '/../vendor/yiisoft/yii2-dev/tests/compatibility.php';
+require_once __DIR__ . '/../vendor/yiisoft/yii2-dev/tests/TestCase.php';
