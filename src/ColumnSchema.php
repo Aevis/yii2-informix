@@ -8,6 +8,8 @@
 
 namespace edgardmessias\db\informix;
 
+use yii\db\ExpressionInterface;
+
 /**
  * @author Edgard Messias <edgardmessias@gmail.com>
  * @since 1.0
@@ -44,7 +46,7 @@ class ColumnSchema extends \yii\db\ColumnSchema
         if ($value === '' && $this->type !== Schema::TYPE_TEXT && $this->type !== Schema::TYPE_STRING && $this->type !== Schema::TYPE_BINARY) {
             return null;
         }
-        if ($value === null || gettype($value) === $this->phpType || $value instanceof \yii\db\Expression) {
+        if ($value === null || gettype($value) === $this->phpType || $value instanceof ExpressionInterface) {
             return $value;
         }
         switch ($this->phpType) {
