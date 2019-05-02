@@ -12,94 +12,98 @@ DROP TABLE null_values CASCADE;
 DROP TABLE constraints CASCADE;
 DROP TABLE bool_values CASCADE;
 DROP TABLE animal CASCADE;
-DROP TABLE default_pk CASCADE;
+DROP TABLE DEFAULT_pk CASCADE;
 DROP TABLE document CASCADE;
+DROP TABLE comment CASCADE;
+DROP TABLE department CASCADE;
+DROP TABLE employee CASCADE;
+DROP TABLE dossier CASCADE;
 DROP VIEW animal_view;
 
 CREATE TABLE constraints
 (
-  id integer not null,
-  field1 varchar(255)
+  id INTEGER NOT NULL,
+  field1 VARCHAR(255)
 );
 
 CREATE TABLE profile (
-  id serial not null primary key,
-  description varchar(128) NOT NULL
+  id serial NOT NULL PRIMARY KEY,
+  description VARCHAR(128) NOT NULL
 );
 
 CREATE TABLE customer (
-  id serial not null primary key,
-  email varchar(128) NOT NULL,
-  name varchar(128),
+  id serial NOT NULL PRIMARY KEY,
+  email VARCHAR(128) NOT NULL,
+  name VARCHAR(128),
   address text,
-  status integer DEFAULT 0,
+  status INTEGER DEFAULT 0,
   bool_status boolean DEFAULT 'f',
-  profile_id integer
+  profile_id INTEGER
 );
 
 CREATE TABLE category (
-  id serial not null primary key,
-  name varchar(128) NOT NULL
+  id serial NOT NULL PRIMARY KEY,
+  name VARCHAR(128) NOT NULL
 );
 
 CREATE TABLE item (
-  id serial not null primary key,
-  name varchar(128) NOT NULL,
-  category_id integer NOT NULL references category(id) on DELETE CASCADE
+  id serial NOT NULL PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  category_id INTEGER NOT NULL references category(id) on DELETE CASCADE
 );
 
 CREATE TABLE order (
-  id serial not null primary key,
-  customer_id integer NOT NULL references customer(id) on DELETE CASCADE,
-  created_at integer NOT NULL,
+  id serial NOT NULL PRIMARY KEY,
+  customer_id INTEGER NOT NULL references customer(id) on DELETE CASCADE,
+  created_at INTEGER NOT NULL,
   total decimal(10,0) NOT NULL
 );
 
 CREATE TABLE order_with_null_fk (
-  id serial not null primary key,
-  customer_id integer,
-  created_at integer NOT NULL,
+  id serial NOT NULL PRIMARY KEY,
+  customer_id INTEGER,
+  created_at INTEGER NOT NULL,
   total decimal(10,0) NOT NULL
 );
 
 CREATE TABLE order_item (
-  order_id integer NOT NULL references order(id) on DELETE CASCADE,
-  item_id integer NOT NULL references item(id) on DELETE CASCADE,
-  quantity integer NOT NULL,
+  order_id INTEGER NOT NULL references order(id) on DELETE CASCADE,
+  item_id INTEGER NOT NULL references item(id) on DELETE CASCADE,
+  quantity INTEGER NOT NULL,
   subtotal decimal(10,0) NOT NULL,
   PRIMARY KEY (order_id,item_id)
 );
 
 CREATE TABLE order_item_with_null_fk (
-  order_id integer,
-  item_id integer,
-  quantity integer NOT NULL,
+  order_id INTEGER,
+  item_id INTEGER,
+  quantity INTEGER NOT NULL,
   subtotal decimal(10,0) NOT NULL
 );
 
 CREATE TABLE composite_fk (
-  id integer NOT NULL,
-  order_id integer NOT NULL,
-  item_id integer NOT NULL,
+  id INTEGER NOT NULL,
+  order_id INTEGER NOT NULL,
+  item_id INTEGER NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (order_id, item_id) REFERENCES order_item (order_id, item_id) ON DELETE CASCADE CONSTRAINT FK_composite_fk_order_item
 );
 
 CREATE TABLE null_values (
   id serial NOT NULL,
-  var1 integer,
-  var2 integer,
-  var3 integer DEFAULT NULL,
+  var1 INTEGER,
+  var2 INTEGER,
+  var3 INTEGER DEFAULT NULL,
   stringcol VARCHAR(32) DEFAULT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE type (
-  int_col integer NOT NULL,
-  int_col2 integer DEFAULT 1,
+  int_col INTEGER NOT NULL,
+  int_col2 INTEGER DEFAULT 1,
   smallint_col smallint DEFAULT 1,
   char_col char(100) NOT NULL,
-  char_col2 varchar(100) DEFAULT 'something',
+  char_col2 VARCHAR(100) DEFAULT 'something',
   char_col3 text,
   float_col double precision NOT NULL,
   float_col2 double precision DEFAULT 1.23,
@@ -109,32 +113,58 @@ CREATE TABLE type (
   bool_col boolean NOT NULL,
   bool_col2 boolean DEFAULT 't',
   bool_col3 boolean DEFAULT 'f',
-  ts_default DATETIME YEAR TO SECOND DEFAULT CURRENT YEAR TO SECOND NOT NULL,
+  ts_DEFAULT DATETIME YEAR TO SECOND DEFAULT CURRENT YEAR TO SECOND NOT NULL,
   bit_col SMALLINT DEFAULT 130 NOT NULL
 );
 
 CREATE TABLE bool_values (
-  id serial not null primary key,
+  id serial NOT NULL PRIMARY KEY,
   bool_col boolean,
-  default_true boolean default 't' not null,
-  default_false boolean  default 'f' not null
+  DEFAULT_true boolean DEFAULT 't' NOT NULL,
+  DEFAULT_false boolean  DEFAULT 'f' NOT NULL
 );
 
 CREATE TABLE animal (
-  id serial primary key,
-  type varchar(255) not null
+  id serial PRIMARY KEY,
+  type VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE default_pk (
-  id integer default 5 not null primary key,
-  type varchar(255) not null
+CREATE TABLE DEFAULT_pk (
+  id INTEGER DEFAULT 5 NOT NULL PRIMARY KEY,
+  type VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE document (
-  id serial primary key,
-  title varchar(255) not null,
-  content text not null,
-  version integer default 0 not null
+  id serial PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  content text NOT NULL,
+  version INTEGER DEFAULT 0 NOT NULL
+);
+
+CREATE TABLE comment (
+  id serial PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  message clob NOT NULL
+);
+
+CREATE TABLE department (
+  id serial PRIMARY KEY,
+  title VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE employee (
+  id INTEGER NOT NULL,
+  department_id INTEGER NOT NULL,
+  first_name VARCHAR(255) NOT NULL,
+  last_name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id, department_id)
+);
+
+CREATE TABLE dossier (
+  id serial PRIMARY KEY,
+  department_id INTEGER NOT NULL,
+  employee_id INTEGER NOT NULL,
+  summary VARCHAR(255) NOT NULL
 );
 
 CREATE VIEW animal_view AS SELECT * FROM animal;
@@ -183,6 +213,17 @@ INSERT INTO order_item_with_null_fk (order_id, item_id, quantity, subtotal) VALU
 
 INSERT INTO document (title, content, version) VALUES ('Yii 2.0 guide', 'This is Yii 2.0 guide', 0);
 
+INSERT INTO department (id, title) VALUES (1, 'IT');
+INSERT INTO department (id, title) VALUES (2, 'accounting');
+
+INSERT INTO employee (id, department_id, first_name, last_name) VALUES (1, 1, 'John', 'Doe');
+INSERT INTO employee (id, department_id, first_name, last_name) VALUES (1, 2, 'Ann', 'Smith');
+INSERT INTO employee (id, department_id, first_name, last_name) VALUES (2, 2, 'Will', 'Smith');
+
+INSERT INTO dossier (id, department_id, employee_id, summary) VALUES (1, 1, 1, 'Excellent employee.');
+INSERT INTO dossier (id, department_id, employee_id, summary) VALUES (2, 2, 1, 'Brilliant employee.');
+INSERT INTO dossier (id, department_id, employee_id, summary) VALUES (3, 2, 2, 'Good employee.');
+
 /**
  * (Postgres-)Database Schema for validator tests
  */
@@ -191,14 +232,14 @@ DROP TABLE validator_main CASCADE;
 DROP TABLE validator_ref CASCADE;
 
 CREATE TABLE validator_main (
-  id integer not null primary key,
+  id INTEGER NOT NULL PRIMARY KEY,
   field1 VARCHAR(255)
 );
 
 CREATE TABLE validator_ref (
-  id integer not null primary key,
+  id INTEGER NOT NULL PRIMARY KEY,
   a_field VARCHAR(255),
-  ref     integer
+  ref     INTEGER
 );
 
 INSERT INTO validator_main (id, field1) VALUES (1, 'just a string1');
@@ -217,8 +258,8 @@ INSERT INTO validator_ref (id, a_field, ref) VALUES (6, 'ref_to_5', 5);
 DROP TABLE bit_values CASCADE;
 
 CREATE TABLE bit_values (
-  id serial not null primary key,
-  val smallint not null
+  id serial NOT NULL PRIMARY KEY,
+  val smallint NOT NULL
 );
 
 INSERT INTO bit_values (id, val) VALUES (1, 0);
