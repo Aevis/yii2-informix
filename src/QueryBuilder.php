@@ -204,6 +204,10 @@ class QueryBuilder extends \yii\db\QueryBuilder
             $values[] = 'SELECT ' . implode(', ', $vs) . ' FROM TABLE(set{1})';
         }
 
+        if (empty($values)) {
+            return '';
+        }
+
         foreach ($columns as $i => $name) {
             $columns[$i] = $schema->quoteColumnName($name);
         }
