@@ -412,4 +412,12 @@ class QueryBuilder extends \yii\db\QueryBuilder
 
         return trim($result);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function selectExists($rawSql)
+    {
+        return 'SELECT CASE WHEN COUNT(*)>0 THEN 1 ELSE 0 END FROM (' . $rawSql . ') CHECKEXISTS';
+    }
 }
