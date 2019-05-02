@@ -1,24 +1,35 @@
-DROP TABLE composite_fk CASCADE;
-DROP TABLE order_item CASCADE;
-DROP TABLE item CASCADE;
-DROP TABLE order_item_with_null_fk CASCADE;
-DROP TABLE order CASCADE;
-DROP TABLE order_with_null_fk CASCADE;
-DROP TABLE category CASCADE;
-DROP TABLE customer CASCADE;
-DROP TABLE profile CASCADE;
-DROP TABLE type CASCADE;
-DROP TABLE null_values CASCADE;
-DROP TABLE constraints CASCADE;
-DROP TABLE bool_values CASCADE;
-DROP TABLE animal CASCADE;
-DROP TABLE DEFAULT_pk CASCADE;
-DROP TABLE document CASCADE;
-DROP TABLE comment CASCADE;
-DROP TABLE department CASCADE;
-DROP TABLE employee CASCADE;
-DROP TABLE dossier CASCADE;
-DROP VIEW animal_view;
+BEGIN WORK;
+    DROP TABLE composite_fk CASCADE;
+    DROP TABLE order_item CASCADE;
+    DROP TABLE item CASCADE;
+    DROP TABLE order_item_with_null_fk CASCADE;
+    DROP TABLE order CASCADE;
+    DROP TABLE order_with_null_fk CASCADE;
+    DROP TABLE category CASCADE;
+    DROP TABLE customer CASCADE;
+    DROP TABLE profile CASCADE;
+    DROP TABLE type CASCADE;
+    DROP TABLE null_values CASCADE;
+    DROP TABLE constraints CASCADE;
+    DROP TABLE bool_values CASCADE;
+    DROP TABLE animal CASCADE;
+    DROP TABLE DEFAULT_pk CASCADE;
+    DROP TABLE document CASCADE;
+    DROP TABLE comment CASCADE;
+    DROP TABLE department CASCADE;
+    DROP TABLE employee CASCADE;
+    DROP TABLE dossier CASCADE;
+    DROP TABLE validator_main CASCADE;
+    DROP TABLE validator_ref CASCADE;
+    DROP TABLE bit_values CASCADE;
+    DROP TABLE t_constraints_1 CASCADE;
+    DROP TABLE t_constraints_2 CASCADE;
+    DROP TABLE t_constraints_3 CASCADE;
+    DROP TABLE t_constraints_4 CASCADE;
+    DROP VIEW animal_view;
+COMMIT WORK;--
+
+-- TABLES
 
 CREATE TABLE constraints
 (
@@ -129,9 +140,14 @@ CREATE TABLE animal (
   type VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE DEFAULT_pk (
+CREATE TABLE default_pk (
   id INTEGER DEFAULT 5 NOT NULL PRIMARY KEY,
   type VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE bit_values (
+  id serial NOT NULL PRIMARY KEY,
+  val smallint NOT NULL
 );
 
 CREATE TABLE document (
@@ -167,11 +183,62 @@ CREATE TABLE dossier (
   summary VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE validator_main (
+  id INTEGER NOT NULL PRIMARY KEY,
+  field1 VARCHAR(255)
+);
+
+CREATE TABLE validator_ref (
+  id INTEGER NOT NULL PRIMARY KEY,
+  a_field VARCHAR(255),
+  ref     INTEGER
+);
+
+CREATE TABLE T_constraints_1
+(
+    C_id integer NOT NULL PRIMARY KEY,
+    C_not_null integer NOT NULL,
+    C_check VARCHAR(255) NULL CHECK (C_check <> ''),
+    C_unique integer NOT NULL,
+    C_default integer NOT NULL DEFAULT 0,
+    UNIQUE (C_unique) CONSTRAINT CN_unique
+);
+
+CREATE TABLE T_constraints_2
+(
+    C_id_1 integer NOT NULL,
+    C_id_2 integer NOT NULL,
+    C_index_1 integer NULL,
+    C_index_2_1 integer NOT NULL DEFAULT 0,
+    C_index_2_2 integer NOT NULL DEFAULT 0,
+    UNIQUE (C_index_2_1, C_index_2_2) CONSTRAINT CN_constraints_2_multi,
+    PRIMARY KEY (C_id_1, C_id_2) CONSTRAINT CN_pk
+);
+
+CREATE INDEX CN_constraints_2_single ON T_constraints_2 (C_index_1);
+
+CREATE TABLE T_constraints_3
+(
+    C_id integer NOT NULL,
+    C_fk_id_1 integer NOT NULL,
+    C_fk_id_2 integer NOT NULL,
+    FOREIGN KEY (C_fk_id_1, C_fk_id_2) REFERENCES T_constraints_2 (C_id_1, C_id_2) ON DELETE CASCADE CONSTRAINT CN_constraints_3
+);
+
+CREATE TABLE T_constraints_4
+(
+    C_id integer NOT NULL PRIMARY KEY,
+    C_col_1 integer NOT NULL DEFAULT 0,
+    C_col_2 integer NOT NULL DEFAULT 0,
+    UNIQUE (C_col_1, C_col_2) CONSTRAINT CN_constraints_4
+);
+
+-- VIEWS
 CREATE VIEW animal_view AS SELECT * FROM animal;
 
+-- DATA
 INSERT INTO animal (type) VALUES ('yiiunit\data\ar\Cat');
 INSERT INTO animal (type) VALUES ('yiiunit\data\ar\Dog');
-
 
 INSERT INTO profile (description) VALUES ('profile customer 1');
 INSERT INTO profile (description) VALUES ('profile customer 3');
@@ -224,24 +291,6 @@ INSERT INTO dossier (id, department_id, employee_id, summary) VALUES (1, 1, 1, '
 INSERT INTO dossier (id, department_id, employee_id, summary) VALUES (2, 2, 1, 'Brilliant employee.');
 INSERT INTO dossier (id, department_id, employee_id, summary) VALUES (3, 2, 2, 'Good employee.');
 
-/**
- * (Postgres-)Database Schema for validator tests
- */
-
-DROP TABLE validator_main CASCADE;
-DROP TABLE validator_ref CASCADE;
-
-CREATE TABLE validator_main (
-  id INTEGER NOT NULL PRIMARY KEY,
-  field1 VARCHAR(255)
-);
-
-CREATE TABLE validator_ref (
-  id INTEGER NOT NULL PRIMARY KEY,
-  a_field VARCHAR(255),
-  ref     INTEGER
-);
-
 INSERT INTO validator_main (id, field1) VALUES (1, 'just a string1');
 INSERT INTO validator_main (id, field1) VALUES (2, 'just a string2');
 INSERT INTO validator_main (id, field1) VALUES (3, 'just a string3');
@@ -252,15 +301,6 @@ INSERT INTO validator_ref (id, a_field, ref) VALUES (3, 'ref_to_3', 3);
 INSERT INTO validator_ref (id, a_field, ref) VALUES (4, 'ref_to_4', 4);
 INSERT INTO validator_ref (id, a_field, ref) VALUES (5, 'ref_to_4', 4);
 INSERT INTO validator_ref (id, a_field, ref) VALUES (6, 'ref_to_5', 5);
-
-/* bit test, see https://github.com/yiisoft/yii2/issues/9006 */
-
-DROP TABLE bit_values CASCADE;
-
-CREATE TABLE bit_values (
-  id serial NOT NULL PRIMARY KEY,
-  val smallint NOT NULL
-);
 
 INSERT INTO bit_values (id, val) VALUES (1, 0);
 INSERT INTO bit_values (id, val) VALUES (2, 1);
